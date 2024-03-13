@@ -25,7 +25,6 @@ public class ProductController {
     }
 
     @PostMapping
-    @ResponseBody
     public String create(@RequestBody ProductRequestDto productRequestDto) {
         return productService.create(productRequestDto)
                 ? "Successfully Created!"
