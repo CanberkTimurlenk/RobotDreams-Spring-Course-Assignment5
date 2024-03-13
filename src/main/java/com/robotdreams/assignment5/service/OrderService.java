@@ -1,6 +1,7 @@
 package com.robotdreams.assignment5.service;
 
 import com.robotdreams.assignment5.dto.OrderRequestDto;
+import com.robotdreams.assignment5.dto.OrderResponseDto;
 import com.robotdreams.assignment5.entity.Order;
 import com.robotdreams.assignment5.entity.OrderProduct;
 import com.robotdreams.assignment5.entity.Product;
@@ -8,6 +9,10 @@ import com.robotdreams.assignment5.repository.OrderRepository;
 import com.robotdreams.assignment5.service.mapper.OrderMapper;
 import org.aspectj.weaver.ast.Or;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
+import java.util.stream.StreamSupport;
 
 @Service
 public class OrderService {
@@ -28,7 +33,7 @@ public class OrderService {
     public Boolean save(OrderRequestDto orderRequestDto) {
 
         // persist order
-        Order order = mapper.OrderRequestDtoToOrder(orderRequestDto);
+        Order order = mapper.orderRequestDtoToOrder(orderRequestDto);
         orderRepository.save(order);
 
         // find product in the dto
@@ -44,7 +49,11 @@ public class OrderService {
                 && orderProduct.getId() > 0;
     }
 
-    public Iterable<Order> findAll() {
-        return orderRepository.findAll();
+    public Optional<List<OrderResponseDto>> findAll() {
+        var responseDtos = StreamSupport.stream(orderRepository.findAll().spliterator(), false)
+                .map(mapper::orderToOrderResponseDto)
+                .toList();
+
+        return Optional.of(responseDtos);
     }
 }

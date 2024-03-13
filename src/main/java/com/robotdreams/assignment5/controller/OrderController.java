@@ -2,8 +2,12 @@ package com.robotdreams.assignment5.controller;
 
 
 import com.robotdreams.assignment5.dto.OrderRequestDto;
+import com.robotdreams.assignment5.dto.OrderResponseDto;
 import com.robotdreams.assignment5.service.OrderService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/orders")
@@ -17,7 +21,6 @@ public class OrderController {
     }
 
     @PostMapping
-    @ResponseBody
     public String create(@RequestBody OrderRequestDto orderRequestDto) {
         return orderService.save(orderRequestDto)
                 ? "Successfully Created!"
@@ -25,8 +28,13 @@ public class OrderController {
     }
 
     @GetMapping
-    public void findAll() {
+    public ResponseEntity<List<OrderResponseDto>> findAll() {
 
-        orderService.  findAll();
+        var orderResponseDtos = orderService.findAll();
+
+        if (orderResponseDtos.isPresent())
+            return ResponseEntity.ok(orderResponseDtos.get());
+
+        return ResponseEntity.notFound().build();
     }
 }

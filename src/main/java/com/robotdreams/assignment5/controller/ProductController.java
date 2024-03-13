@@ -2,8 +2,13 @@ package com.robotdreams.assignment5.controller;
 
 
 import com.robotdreams.assignment5.dto.ProductRequestDto;
+import com.robotdreams.assignment5.dto.ProductResponseDto;
 import com.robotdreams.assignment5.entity.Product;
 import com.robotdreams.assignment5.service.ProductService;
+import com.robotdreams.assignment5.service.mapper.ProductMapper;
+import org.mapstruct.Mapper;
+import org.springframework.http.HttpStatusCode;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,9 +17,11 @@ import java.util.List;
 @RequestMapping("/products")
 public class ProductController {
     private final ProductService productService;
+    private final ProductMapper mapper;
 
-    public ProductController(ProductService productService) {
+    public ProductController(ProductService productService, ProductMapper mapper) {
         this.productService = productService;
+        this.mapper = mapper;
     }
 
     @PostMapping
@@ -26,7 +33,12 @@ public class ProductController {
     }
 
     @GetMapping
-    public void findAll() {
-         var products = productService.findAll();
+    public ResponseEntity<List<ProductResponseDto>> findAll() {
+        var productResponseDtos = productService.findAll();
+
+        if (productResponseDtos.isPresent())
+            return ResponseEntity.ok(productResponseDtos.get());
+
+        return ResponseEntity.notFound().build();
     }
 }
